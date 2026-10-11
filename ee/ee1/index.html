@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ExploreEase — Discover India</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Feather Icons -->
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-50 py-4 px-6 flex items-center justify-between shadow">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full flex items-center justify-center text-white brand-pill font-bold">EE</div>
+      <h1 class="text-xl font-bold text-white">ExploreEase</h1>
+    </div>
+    <nav class="hidden md:flex gap-6 text-gray-300">
+      <a href="#places" class="hover:text-white">Destinations</a>
+      <a href="#stays" class="hover:text-white">Stays</a>
+      <a href="#reviews" class="hover:text-white">Reviews</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      <button id="mobileToggle" class="md:hidden text-gray-300 p-2 rounded-md hover:bg-white/5">
+        <i data-feather="menu"></i>
+      </button>
+      <button class="btn-main text-white px-4 py-2 rounded-full">Become a Host</button>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero-bg relative h-[60vh] md:h-[70vh] flex items-center justify-center text-center mx-4 md:mx-auto md:max-w-6xl rounded-b-xl overflow-hidden">
+    <div class="absolute inset-0 modal-backdrop"></div>
+    <div class="relative z-10 text-white px-6 py-12 max-w-3xl">
+      <h2 class="text-3xl md:text-5xl font-extrabold mb-4">Discover the Best of India</h2>
+      <p class="text-lg md:text-xl mb-6">Search from top cities or explore curated recommendations.</p>
+      <div class="bg-white/6 rounded-full p-2 flex items-center justify-center backdrop-blur-sm shadow-lg">
+        <input id="cityInputHero" class="flex-1 bg-transparent px-6 py-3 text-white placeholder:text-slate-300 outline-none rounded-full" 
+               placeholder="Search a city: Delhi, Goa, Kolkata, Agra, Bengaluru" />
+        <button id="heroSearchBtn" class="px-5 py-2 rounded-full font-semibold transition"
+                style="background: rgba(255,255,255,0.1); color: white;">Search</button>
+      </div>
+      <div class="mt-4 flex gap-3 justify-center text-sm text-slate-200">
+        <button class="quick-btn" data-city="delhi">Delhi</button>
+        <button class="quick-btn" data-city="goa">Goa</button>
+        <button class="quick-btn" data-city="kolkata">Kolkata</button>
+        <button class="quick-btn" data-city="agra">Agra</button>
+        <button class="quick-btn" data-city="bengaluru">Bengaluru</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <main class="max-w-6xl mx-auto px-4 md:px-6 py-10 space-y-10">
+
+    <section id="citySection" class="hidden flex flex-col md:flex-row gap-6">
+      <!-- Sidebar -->
+      <aside class="w-full md:w-64 card-dark rounded-lg p-4 sticky top-24 h-fit">
+        <h3 class="text-xl font-semibold mb-4 text-white">Categories</h3>
+        <ul class="space-y-2">
+          <li><button class="category-btn pill text-white w-full text-left p-2 hover:bg-white/6" data-cat="hotels">Top Rated Hotels</button></li>
+          <li><button class="category-btn pill text-white w-full text-left p-2 hover:bg-white/6" data-cat="places">Top Tourist Places</button></li>
+          <li><button class="category-btn pill text-white w-full text-left p-2 hover:bg-white/6" data-cat="restaurants">Top Rated Restaurants</button></li>
+        </ul>
+      </aside>
+
+      <!-- Results Area -->
+      <div class="flex-1 card-dark rounded-lg p-6">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h2 id="cityTitle" class="text-2xl font-bold text-white"></h2>
+            <p id="citySubtitle" class="muted text-sm"></p>
+          </div>
+          <div class="text-sm muted">Choose a category</div>
+        </div>
+        <div id="resultsArea" class="text-gray-300">Select a category to load items.</div>
+      </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="bg-[linear-gradient(180deg,#0f1220,transparent)] rounded-lg p-6">
+      <h3 class="text-2xl font-bold mb-4 text-white">Traveler Reviews</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white/5 p-4 rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-12 h-12 rounded-full avatar-grad flex items-center justify-center text-sm font-semibold">AR</div>
+            <div>
+              <div class="font-semibold">Aarav R.</div>
+              <div class="text-xs muted">Visited Goa</div>
+            </div>
+          </div>
+          <p class="text-gray-200 italic">"Perfect place to plan a trip. All the best stays and places are just a click away."</p>
+        </div>
+
+        <div class="bg-white/5 p-4 rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-12 h-12 rounded-full avatar-grad flex items-center justify-center text-sm font-semibold">SM</div>
+            <div>
+              <div class="font-semibold">Sneha M.</div>
+              <div class="text-xs muted">Explored Kolkata</div>
+            </div>
+          </div>
+          <p class="text-gray-200 italic">"Loved the popup details and map navigation. Very user friendly."</p>
+        </div>
+
+        <div class="bg-white/5 p-4 rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-12 h-12 rounded-full avatar-grad flex items-center justify-center text-sm font-semibold">RK</div>
+            <div>
+              <div class="font-semibold">Riya K.</div>
+              <div class="text-xs muted">Stayed in Bengaluru</div>
+            </div>
+          </div>
+          <p class="text-gray-200 italic">"I found some hidden gems and the navigation feature was super helpful."</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- DETAIL MODAL -->
+  <div id="infoModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center px-4">
+    <div id="infoCard" class="bg-[#07101a] rounded-xl shadow-2xl w-full max-w-3xl p-6 relative modal-card">
+      <button id="closeModal" class="absolute top-4 right-4 text-gray-300 hover:text-white"><i data-feather="x"></i></button>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="overflow-hidden rounded-lg">
+          <img id="modalImg" src="" alt="place image" class="w-full h-56 object-cover rounded-md" />
+        </div>
+        <div class="md:col-span-2">
+          <h3 id="modalTitle" class="text-2xl font-bold text-white mb-2"></h3>
+          <div class="flex items-center gap-3 mb-3">
+            <div id="modalRating" class="text-sm font-medium text-white"></div>
+            <div id="modalAddress" class="text-sm muted"></div>
+          </div>
+          <p id="modalDesc" class="muted mb-3"></p>
+          <div class="grid grid-cols-2 gap-3 text-sm mb-5">
+            <div>
+              <div class="text-xs muted">Entry Fee</div>
+              <div id="modalFee" class="text-white font-medium">—</div>
+            </div>
+            <div>
+              <div class="text-xs muted">Opening Hours</div>
+              <div id="modalHours" class="text-white font-medium">—</div>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <a id="navigateBtn" target="_blank" rel="noopener noreferrer" class="no-underline">
+              <button class="px-4 py-2 nav-btn rounded-full">Navigate</button>
+            </a>
+            <button id="closeBtn" class="px-4 py-2 border border-white/10 text-white rounded-full">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center py-6 text-sm text-gray-400">
+    &copy; <span id="year"></span> ExploreEase — Made with ♥
+  </footer>
+
+  <script src="script.js"></script>
+  <script>feather.replace();</script>
+</body>
+</html>

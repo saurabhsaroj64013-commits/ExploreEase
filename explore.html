@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ExploreIndia</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Custom CSS -->
+  <style>
+    body { background: #0d0f17; color: #e4e4e7; }
+    .card-dark { background: #1a1c24; }
+    .hover-lift { transition: .25s; }
+    .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+    header { background: #11131b; border-bottom: 1px solid #1f2028; }
+    .pill { background: #11131b; border: 1px solid #2a2c36; }
+    .btn-main { background: #e63946; } /* Original Red Button */
+  </style>
+</head>
+
+<body class="font-sans">
+
+<!-- HEADER -->
+<header class="sticky top-0 z-50 py-4 px-6 flex items-center justify-between shadow">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style="background:#e63946">EI</div>
+    <h1 class="text-xl font-bold text-white">ExploreIndia</h1>
+  </div>
+
+  <nav class="hidden md:flex gap-6 text-gray-300">
+    <a href="#" class="hover:text-white">Destinations</a>
+    <a href="#" class="hover:text-white">Stays</a>
+    <a href="#" class="hover:text-white">Experiences</a>
+  </nav>
+
+  <button class="btn-main text-white px-4 py-2 rounded-full">Become a Host</button>
+</header>
+
+<!-- MAIN -->
+<main class="max-w-5xl mx-auto px-6 py-12">
+
+  <!-- HOME SECTION -->
+  <section id="homeSection" class="text-center">
+    <h2 class="text-4xl font-extrabold mb-4 text-white">Not sure where to go?</h2>
+    <p class="text-gray-400 mb-8">Search cities: Delhi, Goa, Kolkata, Agra, Bengaluru</p>
+
+    <div class="flex flex-col md:flex-row gap-3 max-w-3xl mx-auto">
+      <input id="cityInput" class="flex-1 p-4 rounded-full pill text-white" placeholder="Search city..." />
+      <button onclick="onSearch()" class="btn-main px-6 py-3 rounded-full text-white font-semibold">Search</button>
+    </div>
+  </section>
+
+  <!-- CITY SECTION -->
+  <section id="citySection" class="hidden mt-12">
+    <div class="flex flex-col md:flex-row gap-6">
+
+      <!-- SIDEBAR -->
+      <aside class="w-64 card-dark rounded-lg p-4 h-fit sticky top-24">
+        <h3 class="text-xl font-semibold mb-3">Categories</h3>
+        <ul class="space-y-2">
+          <li><button class="w-full text-left p-2 rounded pill hover:bg-[#1f2028]" onclick="selectCategory('hotels')">Top rated hotels</button></li>
+          <li><button class="w-full text-left p-2 rounded pill hover:bg-[#1f2028]" onclick="selectCategory('places')">Top tourist places</button></li>
+          <li><button class="w-full text-left p-2 rounded pill hover:bg-[#1f2028]" onclick="selectCategory('restaurants')">Top rated restaurants</button></li>
+        </ul>
+      </aside>
+
+      <!-- RESULTS -->
+      <div class="flex-1 card-dark rounded-lg p-6">
+        <h2 id="cityTitle" class="text-2xl font-bold text-white"></h2>
+        <p id="citySubtitle" class="text-gray-400 text-sm mb-4"></p>
+        <div id="resultsArea" class="text-gray-400">Select a category to load results.</div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- SCRIPT -->
+<script>
+const allowedCities = ["delhi","goa","kolkata","agra","bengaluru","bangaluru"];
+let currentCity = null;
+
+function onSearch() {
+  let t = document.getElementById("cityInput").value.trim().toLowerCase();
+  if (!t) return alert("Enter a city name.");
+  if (!allowedCities.includes(t)) return alert("No city found.");
+
+  t = (t === "bangaluru" || t === "bengaluru") ? "Bengaluru" : t.charAt(0).toUpperCase() + t.slice(1);
+  
+  openCityPage(t);
+}
+
+function openCityPage(city) {
+  currentCity = city;
+  document.getElementById("homeSection").classList.add("hidden");
+  document.getElementById("citySection").classList.remove("hidden");
+  document.getElementById("cityTitle").innerText = `Explore ${city}`;
+  document.getElementById("citySubtitle").innerText = `What would you like to discover in ${city}?`;
+}
+
+function selectCategory(category) {
+  const data = fallbackData(currentCity, category);
+  renderResults(data);
+}
+
+function fallbackData(city, category) {
+  const data = {
+    hotels: [{ name: `${city} Grand Hotel`, rating: "4.8" }, { name: `Royal ${city} Suites`, rating: "4.6" }],
+    places: [{ name: `${city} Fort`, rating: "4.8" }, { name: `${city} Museum`, rating: "4.7" }],
+    restaurants: [{ name: `${city} Spice House`, rating: "4.7" }, { name: `Cafe ${city}`, rating: "4.5" }]
+  };
+  return data[category];
+}
+
+function renderResults(list) {
+  let html = "";
+  list.forEach(item => {
+    html += `
+      <div class='card-dark p-4 rounded-lg hover-lift'>
+        <h3 class='text-lg font-semibold text-white'>${item.name}</h3>
+        <p class='text-gray-400 text-sm mt-1'>Rating: ${item.rating}</p>
+      </div>`;
+  });
+
+  document.getElementById("resultsArea").innerHTML =
+    `<div class='grid grid-cols-1 md:grid-cols-2 gap-4'>${html}</div>`;
+}
+</script>
+
+</body>
+</html>

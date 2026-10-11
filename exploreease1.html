@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore India</title>
+    <!-- Use Tailwind CSS via CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc;
+        }
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
+                    <path d="M15 13.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                    <path d="M12 9l3 3m-3-3l-3 3m3-3v6" />
+                </svg>
+                <span class="text-2xl font-bold text-gray-900">Explore India</span>
+            </a>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#featured" class="text-gray-600 hover:text-indigo-600 transition duration-300">Places</a>
+                <a href="#hotels" class="text-gray-600 hover:text-indigo-600 transition duration-300">Hotels</a>
+                <a href="#reviews" class="text-gray-600 hover:text-indigo-600 transition duration-300">Reviews</a>
+                <a href="#" class="px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition duration-300 shadow-lg">Book a Ride</a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden p-2 text-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg border-t border-gray-200 py-4">
+            <div class="px-6 space-y-4">
+                <a href="#featured" class="block text-gray-600 hover:text-indigo-600 transition duration-300">Places</a>
+                <a href="#hotels" class="block text-gray-600 hover:text-indigo-600 transition duration-300">Hotels</a>
+                <a href="#reviews" class="block text-gray-600 hover:text-indigo-600 transition duration-300">Reviews</a>
+                <a href="#" class="block px-4 py-2 bg-indigo-600 text-white rounded-full text-center hover:bg-indigo-700 transition duration-300 shadow-lg">Book a Ride</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6">
+
+        <!-- Hero Section -->
+        <section class="relative h-96 md:h-[500px] bg-cover bg-center rounded-3xl shadow-xl flex items-center justify-center p-6 mb-12"
+                 style="background-image: url('https://images.unsplash.com/photo-1548013146-8800201d7826?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNTg0NTR8MHwxfHNlYXJjaHwxfHxUYWplJTIwTWFoYWwlMjBhbmQlMjBJbmRpYW58ZW58MHx8fHwxNjk5MjcyNDQ3&ixlib=rb-4.0.3&q=80&w=1080');">
+            <div class="absolute inset-0 bg-black opacity-40 rounded-3xl"></div>
+            <div class="relative text-center text-white p-4">
+                <h1 class="text-4xl md:text-6xl font-bold text-shadow mb-4">Discover the Beauty of India</h1>
+                <p class="text-lg md:text-2xl text-shadow mb-8">Your ultimate guide to famous cities, hidden gems, and unforgettable experiences.</p>
+                <button class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105">
+                    Start Your Adventure
+                </button>
+            </div>
+        </section>
+
+        <!-- Famous Places Section -->
+        <section id="featured" class="mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-900">Famous Places to Visit</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Place Card 1 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+                    <img src="https://placehold.co/600x400/3182ce/ffffff?text=Jaipur" alt="Jaipur" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 text-gray-900">Jaipur, Rajasthan</h3>
+                        <p class="text-gray-600 text-sm">The 'Pink City' is a beautiful blend of history and culture with stunning palaces and forts.</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-sm text-gray-500">Weather: 28°C, Sunny</span>
+                            <button class="text-indigo-600 hover:text-indigo-800 font-semibold transition duration-300">Learn More &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Place Card 2 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+                    <img src="https://placehold.co/600x400/4c51bf/ffffff?text=Goa" alt="Goa" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 text-gray-900">Goa</h3>
+                        <p class="text-gray-600 text-sm">Known for its beautiful beaches, vibrant nightlife, and historic churches.</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-sm text-gray-500">Weather: 31°C, Humid</span>
+                            <button class="text-indigo-600 hover:text-indigo-800 font-semibold transition duration-300">Learn More &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Place Card 3 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+                    <img src="https://placehold.co/600x400/4c51bf/ffffff?text=New+Delhi" alt="New Delhi" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 text-gray-900">New Delhi</h3>
+                        <p class="text-gray-600 text-sm">The capital city is a treasure trove of historical landmarks and modern wonders.</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-sm text-gray-500">Weather: 25°C, Hazy</span>
+                            <button class="text-indigo-600 hover:text-indigo-800 font-semibold transition duration-300">Learn More &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation & Ride Booking Section -->
+        <section id="navigation" class="bg-white rounded-xl shadow-lg p-8 mb-12 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Plan Your Journey</h2>
+            <p class="text-gray-600 text-lg mb-6">Find the best routes and book a ride with a single click.</p>
+            <div class="max-w-xl mx-auto space-y-4">
+                <input type="text" placeholder="Enter your current location" class="w-full p-4 rounded-xl border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-300">
+                <input type="text" placeholder="Enter your destination" class="w-full p-4 rounded-xl border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-300">
+                <button id="book-ride-btn" class="w-full py-4 bg-indigo-600 text-white font-bold rounded-xl shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105">
+                    Book a Ride Now
+                </button>
+                <div id="booking-message" class="hidden mt-4 p-4 rounded-xl bg-green-100 text-green-700 font-medium">
+                    Your ride has been requested!
+                </div>
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section id="reviews" class="mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-900">What Our Travelers Say</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Review Card 1 -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <img class="w-12 h-12 rounded-full mr-4 object-cover" src="https://placehold.co/100x100/e2e8f0/000000?text=JD" alt="User Avatar">
+                        <div>
+                            <p class="font-bold text-gray-900">John D.</p>
+                            <p class="text-sm text-gray-500">Traveled to Delhi</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 italic">"This website made planning my trip to India so easy. The reviews were incredibly helpful and the navigation feature saved me so much time!"</p>
+                </div>
+
+                <!-- Review Card 2 -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <img class="w-12 h-12 rounded-full mr-4 object-cover" src="https://placehold.co/100x100/e2e8f0/000000?text=AM" alt="User Avatar">
+                        <div>
+                            <p class="font-bold text-gray-900">Anjali M.</p>
+                            <p class="text-sm text-gray-500">Explored Jaipur</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 italic">"I loved the hotel suggestions! Everything was perfectly tailored to my needs. The weather updates were a great bonus."</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024 Explore India. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript for mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // JavaScript for the "Book a Ride" button
+        const bookRideBtn = document.getElementById('book-ride-btn');
+        const bookingMessage = document.getElementById('booking-message');
+
+        bookRideBtn.addEventListener('click', () => {
+            bookingMessage.classList.remove('hidden');
+            setTimeout(() => {
+                bookingMessage.classList.add('hidden');
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

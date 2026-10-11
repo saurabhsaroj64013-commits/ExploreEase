@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ExploreEase — Discover India</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Feather icons -->
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    :root{
+      --primary:#7c3aed;   /* purple-600 */
+      --primary-dark:#6d28d9; /* purple-700 */
+      --bg-dark:#0d0f17;
+      --card:#1a1c24;
+      --muted:#9ca3af;
+    }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg-dark); color: #e6edf3;}
+    .card-dark { background: var(--card); }
+    .hover-lift { transition: .25s; }
+    .hover-lift:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,0.6); }
+    header { background: #0b0c10; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    .pill { background: #0b0c10; border: 1px solid rgba(255,255,255,0.04); }
+    .btn-main { background: var(--primary); }
+    .btn-main:hover { background: var(--primary-dark); }
+    /* hero overlay */
+    .hero-bg { background-image: linear-gradient(180deg, rgba(12,10,20,0.55), rgba(12,10,20,0.65)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center; }
+    .muted { color: var(--muted); }
+    .avatar-grad { background: linear-gradient(135deg,#7c3aed,#6d28d9); color: white; }
+    .modal-backdrop{ background: rgba(2,6,23,0.6); }
+    @media (max-width: 768px){
+      aside.sticky { position: static; top:auto; }
+    }
+    /* small link style reset inside cards */
+    .no-underline { text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-50 py-4 px-6 flex items-center justify-between shadow">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style="background:var(--primary)">EE</div>
+      <h1 class="text-xl font-bold text-white">ExploreEase</h1>
+    </div>
+
+    <nav class="hidden md:flex gap-6 text-gray-300">
+      <a href="#places" class="hover:text-white">Destinations</a>
+      <a href="#stays" class="hover:text-white">Stays</a>
+      <a href="#reviews" class="hover:text-white">Reviews</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <button id="mobileToggle" class="md:hidden text-gray-300 p-2 rounded-md hover:bg-white/5"><i data-feather="menu"></i></button>
+      <button class="btn-main text-white px-4 py-2 rounded-full">Become a Host</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero-bg h-[56vh] md:h-[66vh] flex items-center justify-center text-center relative mt-4 md:mt-6 rounded-b-xl overflow-hidden mx-4 md:mx-auto md:max-w-6xl">
+    <div class="absolute inset-0 modal-backdrop"></div>
+    <div class="relative z-10 px-6 py-12 text-white max-w-3xl">
+      <h2 class="text-3xl md:text-5xl font-extrabold mb-4">Find places, stays and experiences across India</h2>
+      <p class="text-gray-200 mb-6">Search popular cities or try the quick suggestions to jump straight into curated lists.</p>
+
+      <!-- hero search -->
+      <div class="bg-white/6 rounded-full p-2 flex gap-2 items-center justify-center backdrop-blur-sm shadow-lg">
+        <input id="cityInputHero" class="flex-1 bg-transparent px-6 py-3 text-white placeholder:text-slate-300 outline-none rounded-full" placeholder="Search cities — Delhi, Goa, Kolkata, Agra, Bengaluru" />
+        <button onclick="onSearchHero()" class="bg-white/10 hover:bg-white/20 text-white px-5 py-2 rounded-full font-semibold transition">Search</button>
+      </div>
+
+      <div class="mt-4 flex gap-3 justify-center text-sm text-slate-200">
+        <button onclick="quick('delhi')" class="px-3 py-1 rounded-full border border-white/10">Delhi</button>
+        <button onclick="quick('goa')" class="px-3 py-1 rounded-full border border-white/10">Goa</button>
+        <button onclick="quick('kolkata')" class="px-3 py-1 rounded-full border border-white/10">Kolkata</button>
+        <button onclick="quick('agra')" class="px-3 py-1 rounded-full border border-white/10">Agra</button>
+        <button onclick="quick('bengaluru')" class="px-3 py-1 rounded-full border border-white/10">Bengaluru</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN -->
+  <main class="max-w-6xl mx-auto px-4 md:px-6 py-10 space-y-10">
+
+    <!-- City + sidebar -->
+    <section id="citySection" class="hidden">
+      <div class="flex flex-col md:flex-row gap-6">
+
+        <!-- SIDEBAR -->
+        <aside class="w-full md:w-64 card-dark rounded-lg p-4 h-fit sticky top-24">
+          <h3 class="text-xl font-semibold mb-3 text-white">Categories</h3>
+          <ul class="space-y-2">
+            <li><button id="cat-hotels" class="w-full text-left p-2 rounded pill hover:bg-white/6 text-white" onclick="selectCategory('hotels')">Top rated hotels</button></li>
+            <li><button id="cat-places" class="w-full text-left p-2 rounded pill hover:bg-white/6 text-white" onclick="selectCategory('places')">Top tourist places</button></li>
+            <li><button id="cat-restaurants" class="w-full text-left p-2 rounded pill hover:bg-white/6 text-white" onclick="selectCategory('restaurants')">Top rated restaurants</button></li>
+          </ul>
+        </aside>
+
+        <!-- RESULTS -->
+        <div class="flex-1 card-dark rounded-lg p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 id="cityTitle" class="text-2xl font-bold text-white"></h2>
+              <p id="citySubtitle" class="muted text-sm"></p>
+            </div>
+            <div class="text-sm muted">Showing results</div>
+          </div>
+
+          <div id="resultsArea" class="text-gray-300">Select a category to load results.</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Reviews (global) -->
+    <section id="reviews" class="bg-[linear-gradient(180deg,#0f1220,transparent)] rounded-lg p-6">
+      <h3 class="text-2xl font-bold mb-4 text-white">Traveler Experiences</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- review 1 -->
+        <div class="bg-white/5 p-4 rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-12 h-12 rounded-full avatar-grad flex items-center justify-center text-sm font-semibold">AR</div>
+            <div>
+              <div class="font-semibold">Aarav R.</div>
+              <div class="text-xs muted">Visited Goa</div>
+            </div>
+          </div>
+          <p class="text-gray-200 italic">"Found amazing beaches and a perfect resort — booking through ExploreEase was effortless."</p>
+        </div>
+
+        <!-- review 2 -->
+        <div class="bg-white/5 p-4 rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-12 h-12 rounded-full avatar-grad flex items-center justify-center text-sm font-semibold">SM</div>
+            <div>
+              <div class="font-semibold">Sneha M.</div>
+              <div class="text-xs muted">Explored Jaipur</div>
+            </div>
+          </div>
+          <p class="text-gray-200 italic">"Great UI, fast results and accurate listings. Loved the suggested places."</p>
+        </div>
+
+        <!-- review 3 -->
+        <div class="bg-white/5 p-4 rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-12 h-12 rounded-full avatar-grad flex items-center justify-center text-sm font-semibold">RK</div>
+            <div>
+              <div class="font-semibold">Riya K.</div>
+              <div class="text-xs muted">Stayed in Bengaluru</div>
+            </div>
+          </div>
+          <p class="text-gray-200 italic">"Useful filters and nice images. The map directions helped a lot."</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal for item details -->
+  <div id="infoModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center px-4">
+    <div class="bg-[#07101a] rounded-xl shadow-2xl w-full max-w-3xl p-6 relative">
+      <button id="closeModal" class="absolute top-4 right-4 text-gray-300 hover:text-white"><i data-feather="x"></i></button>
+      <img id="modalImg" src="" class="w-full h-56 object-cover rounded-lg mb-4" alt="image" />
+      <h3 id="modalTitle" class="text-2xl font-bold mb-2"></h3>
+      <p id="modalDesc" class="muted mb-2"></p>
+      <p id="modalExtra" class="text-sm text-gray-300"></p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 text-sm text-gray-400">
+    &copy; <span id="year"></span> ExploreEase — Made with ♥
+  </footer>
+
+  <!-- SCRIPT (data + logic) -->
+  <script>
+    feather.replace();
+    document.getElementById('year').innerText = new Date().getFullYear();
+
+    // allowed cities
+    const allowedCities = ["delhi","goa","kolkata","agra","bengaluru","bangaluru"];
+    let currentCity = null, currentCategory = null;
+
+    // Expanded fallback data — 5 items per category for each city (images from Unsplash)
+    const dataStore = {
+      delhi: {
+        hotels: [
+          { name: "The Taj Palace, Delhi", rating: "4.8", img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=60", desc: "Luxury hotel near diplomatic area." },
+          { name: "Imperial Delhi", rating: "4.7", img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=60", desc: "Historic property with modern amenities." },
+          { name: "Le Meridien, New Delhi", rating: "4.6", img: "https://images.unsplash.com/photo-1545051238-9bf6f7e8b6b8?auto=format&fit=crop&w=1200&q=60", desc: "Contemporary rooms and poolside dining." },
+          { name: "The Lodhi", rating: "4.7", img: "https://images.unsplash.com/photo-1560347876-aeef00ee58a1?auto=format&fit=crop&w=1200&q=60", desc: "Boutique luxury close to city attractions." },
+          { name: "Andaz Delhi", rating: "4.5", img: "https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?auto=format&fit=crop&w=1200&q=60", desc: "Stylish hotel with rooftop bar." }
+        ],
+        places: [
+          { name: "India Gate", rating: "4.6", img: "https://images.unsplash.com/photo-1602916149870-3f8cde9abf34?auto=format&fit=crop&w=1200&q=60", desc: "Iconic war memorial and popular evenings spot." },
+          { name: "Qutub Minar", rating: "4.7", img: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1200&q=60", desc: "UNESCO World Heritage site." },
+          { name: "Humayun's Tomb", rating: "4.6", img: "https://images.unsplash.com/photo-1505765052290-7feca0d7c99f?auto=format&fit=crop&w=1200&q=60", desc: "Beautiful Mughal-era garden tomb." },
+          { name: "Red Fort", rating: "4.5", img: "https://images.unsplash.com/photo-1588092351336-5d6b2d2050e8?auto=format&fit=crop&w=1200&q=60", desc: "Historic fort and national monument." },
+          { name: "Lotus Temple", rating: "4.4", img: "https://images.unsplash.com/photo-1579546928686-21e6be1a0d53?auto=format&fit=crop&w=1200&q=60", desc: "Architectural marvel for calm reflection." }
+        ],
+        restaurants: [
+          { name: "Paranthe Wali Gali", rating: "4.4", img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=1200&q=60", desc: "Famous street food lane." },
+          { name: "Bukhara", rating: "4.8", img: "https://images.unsplash.com/photo-1543352634-68b3c6b2f0de?auto=format&fit=crop&w=1200&q=60", desc: "Legendary north-west frontier cuisine." },
+          { name: "Indian Accent", rating: "4.7", img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=60", desc: "Modern Indian fine dining." },
+          { name: "Karim's", rating: "4.5", img: "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=1200&q=60", desc: "Historic Mughlai flavors in Old Delhi." },
+          { name: "SodaBottleOpenerWala", rating: "4.3", img: "https://images.unsplash.com/photo-1526318472351-c75fcf0702d9?auto=format&fit=crop&w=1200&q=60", desc: "Irani café inspired Parsi & Bombay food." }
+        ]
+      },
+
+      goa: {
+        hotels: [
+          { name: "Marriott Resort, Goa", rating: "4.7", img: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=60", desc: "Beachfront resort with ocean views." },
+          { name: "Alila Diwa Goa", rating: "4.6", img: "https://images.unsplash.com/photo-1576675781305-8b6b5ff07b3b?auto=format&fit=crop&w=1200&q=60", desc: "Resort in Goa's serene settings." },
+          { name: "Taj Exotica", rating: "4.8", img: "https://images.unsplash.com/photo-1501117716987-c8e5b4ccf4b1?auto=format&fit=crop&w=1200&q=60", desc: "Luxury property on a private bay." },
+          { name: "W Goa", rating: "4.5", img: "https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?auto=format&fit=crop&w=1200&q=60", desc: "Vibrant beachfront lifestyle hotel." },
+          { name: "Ahilya by the Sea", rating: "4.4", img: "https://images.unsplash.com/photo-1541753866388-0b0c0fbf1c84?auto=format&fit=crop&w=1200&q=60", desc: "Cozy boutique stays near the beach." }
+        ],
+        places: [
+          { name: "Baga Beach", rating: "4.6", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=60", desc: "Lively beach with water sports." },
+          { name: "Fort Aguada", rating: "4.5", img: "https://images.unsplash.com/photo-1584467735867-5d2d5d6c5d61?auto=format&fit=crop&w=1200&q=60", desc: "17th-century Portuguese fort." },
+          { name: "Anjuna Flea Market", rating: "4.3", img: "https://images.unsplash.com/photo-1536619419570-5d7e2f5b15c2?auto=format&fit=crop&w=1200&q=60", desc: "Colorful market with crafts & food." },
+          { name: "Calangute Beach", rating: "4.2", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=60", desc: "Popular family beach." },
+          { name: "Chapora Fort", rating: "4.1", img: "https://images.unsplash.com/photo-1545060894-7ce9e6c9e6d1?auto=format&fit=crop&w=1200&q=60", desc: "Scenic fort with coastal views." }
+        ],
+        restaurants: [
+          { name: "Martin's Corner", rating: "4.6", img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=60", desc: "Seafood favorites in a friendly setting." },
+          { name: "Gunpowder", rating: "4.7", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=60", desc: "Goan and South Indian fusion." },
+          { name: "Thalassa", rating: "4.5", img: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=60", desc: "Greek taverna with sunset views." },
+          { name: "Vinayak Family Restaurant", rating: "4.3", img: "https://images.unsplash.com/photo-1526312426976-55fc4a6e3e2d?auto=format&fit=crop&w=1200&q=60", desc: "Local Goan delicacies." },
+          { name: "Cafe Alchemia", rating: "4.2", img: "https://images.unsplash.com/photo-1496412705862-e0088f16f791?auto=format&fit=crop&w=1200&q=60", desc: "Trendy café and live music." }
+        ]
+      },
+
+      kolkata: {
+        hotels: [
+          { name: "The Oberoi Grand", rating: "4.6", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=60", desc: "Heritage luxury hotel." },
+          { name: "Hyatt Regency Kolkata", rating: "4.5", img: "https://images.unsplash.com/photo-1553440564-969c9f0ffb2b?auto=format&fit=crop&w=1200&q=60", desc: "Comfortable modern stay." },
+          { name: "The Park Kolkata", rating: "4.4", img: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=60", desc: "Stylish central hotel." },
+          { name: "Novotel Kolkata", rating: "4.3", img: "https://images.unsplash.com/photo-1558494949-d40b9f9a3f6b?auto=format&fit=crop&w=1200&q=60", desc: "Good business hotel with pool." },
+          { name: "Alsisar Haveli (Kolkata)", rating: "4.2", img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=60", desc: "Heritage-style comforts." }
+        ],
+        places: [
+          { name: "Victoria Memorial", rating: "4.7", img: "https://images.unsplash.com/photo-1563371356-0de7b9b3b1fc?auto=format&fit=crop&w=1200&q=60", desc: "Stately monument & museum." },
+          { name: "Dakshineswar Kali Temple", rating: "4.5", img: "https://images.unsplash.com/photo-1545420331-6b4a28a5075b?auto=format&fit=crop&w=1200&q=60", desc: "Famous riverside temple." },
+          { name: "Howrah Bridge", rating: "4.4", img: "https://images.unsplash.com/photo-1523254959083-3b3a8f0884d2?auto=format&fit=crop&w=1200&q=60", desc: "Iconic cantilever bridge over Hooghly." },
+          { name: "Princep Ghat", rating: "4.3", img: "https://images.unsplash.com/photo-1525128248930-1e6f7e66b0ee?auto=format&fit=crop&w=1200&q=60", desc: "Riverside promenade with boats." },
+          { name: "Park Street", rating: "4.2", img: "https://images.unsplash.com/photo-1546554137-f86b9593a222?auto=format&fit=crop&w=1200&q=60", desc: "Historic street with restaurants & nightlife." }
+        ],
+        restaurants: [
+          { name: "Peter Cat", rating: "4.4", img: "https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1200&q=60", desc: "Kolkata’s iconic restaurant." },
+          { name: "6 Ballygunge Place", rating: "4.5", img: "https://images.unsplash.com/photo-1555992336-03a23c6e9b7b?auto=format&fit=crop&w=1200&q=60", desc: "Bengali specialties." },
+          { name: "Oh! Calcutta", rating: "4.3", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=60", desc: "Classic Bengali fine dining." },
+          { name: "Flurys", rating: "4.2", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1200&q=60", desc: "Historic tearoom and bakery." },
+          { name: "Bhojohori Manna", rating: "4.4", img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=60", desc: "Comforting Bengali home-cooked meals." }
+        ]
+      },
+
+      agra: {
+        hotels: [
+          { name: "ITC Mughal", rating: "4.7", img: "https://images.unsplash.com/photo-1560347876-aeef00ee58a1?auto=format&fit=crop&w=1200&q=60", desc: "Luxurious stay near the Taj." },
+          { name: "Tajview Hotel", rating: "4.6", img: "https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=1200&q=60", desc: "Rooms with Taj views." },
+          { name: "Hotel Clarks Shiraz", rating: "4.4", img: "https://images.unsplash.com/photo-1549887534-3f1a7dfd9e4d?auto=format&fit=crop&w=1200&q=60", desc: "Comfortable central accommodation." },
+          { name: "DoubleTree by Hilton Agra", rating: "4.3", img: "https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?auto=format&fit=crop&w=1200&q=60", desc: "Modern hotel with amenities." },
+          { name: "Howard Plaza The Fern", rating: "4.2", img: "https://images.unsplash.com/photo-1501117716987-c8e5b4ccf4b1?auto=format&fit=crop&w=1200&q=60", desc: "Comfortable business hotel." }
+        ],
+        places: [
+          { name: "Taj Mahal", rating: "4.9", img: "https://images.unsplash.com/photo-1549897462-1f9b151e7d1d?auto=format&fit=crop&w=1200&q=60", desc: "The world-famous monument." },
+          { name: "Agra Fort", rating: "4.6", img: "https://images.unsplash.com/photo-1526406915892-1e8e3b8f2b9e?auto=format&fit=crop&w=1200&q=60", desc: "Historic Mughal fort." },
+          { name: "Mehtab Bagh", rating: "4.3", img: "https://images.unsplash.com/photo-1496412705862-e0088f16f791?auto=format&fit=crop&w=1200&q=60", desc: "Gardens opposite the Taj." },
+          { name: "Itmad-ud-Daulah", rating: "4.2", img: "https://images.unsplash.com/photo-1531306728370-6f9e49b67d73?auto=format&fit=crop&w=1200&q=60", desc: "Petite marble tomb often called 'Baby Taj'." },
+          { name: "Jama Masjid, Agra", rating: "4.1", img: "https://images.unsplash.com/photo-1505874306313-1f3d7b6b9b6f?auto=format&fit=crop&w=1200&q=60", desc: "Historic mosque near city center." }
+        ],
+        restaurants: [
+          { name: "Pinch of Spice", rating: "4.4", img: "https://images.unsplash.com/photo-1555992336-03a23c6e9b7b?auto=format&fit=crop&w=1200&q=60", desc: "Popular multi-cuisine option." },
+          { name: "Peshawri (ITC)", rating: "4.6", img: "https://images.unsplash.com/photo-1550258987-190a2d41a8ba?auto=format&fit=crop&w=1200&q=60", desc: "Northwest frontier specialties." },
+          { name: "The Skyline Restaurant", rating: "4.2", img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=60", desc: "Rooftop dining with city views." },
+          { name: "Esphahan", rating: "4.3", img: "https://images.unsplash.com/photo-1543352634-68b3c6b2f0de?auto=format&fit=crop&w=1200&q=60", desc: "Fine dining with Mughlai influences." },
+          { name: "Mama Chicken Mama Franky", rating: "4.0", img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=60", desc: "Quick and tasty local eats." }
+        ]
+      },
+
+      bengaluru: {
+        hotels: [
+          { name: "The Leela Palace, Bengaluru", rating: "4.8", img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=60", desc: "Luxury with city convenience." },
+          { name: "Taj West End", rating: "4.7", img: "https://images.unsplash.com/photo-1549887534-3f1a7dfd9e4d?auto=format&fit=crop&w=1200&q=60", desc: "Historic lush property." },
+          { name: "ITC Gardenia", rating: "4.6", img: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=60", desc: "Upscale property with great service." },
+          { name: "JW Marriott Bengaluru", rating: "4.5", img: "https://images.unsplash.com/photo-1560448204-9f90d8c6d0c4?auto=format&fit=crop&w=1200&q=60", desc: "Business-friendly luxury hotel." },
+          { name: "The Ritz-Carlton", rating: "4.6", img: "https://images.unsplash.com/photo-1553440564-969c9f0ffb2b?auto=format&fit=crop&w=1200&q=60", desc: "Premium stay with urban views." }
+        ],
+        places: [
+          { name: "Lalbagh Botanical Garden", rating: "4.6", img: "https://images.unsplash.com/photo-1529253355930-1e0f85a7d51a?auto=format&fit=crop&w=1200&q=60", desc: "Beautiful botanical garden." },
+          { name: "Bangalore Palace", rating: "4.4", img: "https://images.unsplash.com/photo-1524008277660-5a0f6d6a0a2c?auto=format&fit=crop&w=1200&q=60", desc: "Palace with interesting tours." },
+          { name: "Cubbon Park", rating: "4.5", img: "https://images.unsplash.com/photo-1520975915309-6a8d3d1b4b6f?auto=format&fit=crop&w=1200&q=60", desc: "Large green space in the city center." },
+          { name: "Nandi Hills (day trip)", rating: "4.7", img: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=60", desc: "Popular sunrise viewpoint near the city." },
+          { name: "Innovative Film City", rating: "4.0", img: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=1200&q=60", desc: "Entertainment complex & theme park." }
+        ],
+        restaurants: [
+          { name: "Toit", rating: "4.5", img: "https://images.unsplash.com/photo-1555992336-03a23c6e9b7b?auto=format&fit=crop&w=1200&q=60", desc: "Brewery and great food." },
+          { name: "Karavalli", rating: "4.7", img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=60", desc: "Southwest coastal cuisine." },
+          { name: "MTR", rating: "4.4", img: "https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?auto=format&fit=crop&w=1200&q=60", desc: "Historic and hearty Karnataka meals." },
+          { name: "Corner House", rating: "4.3", img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=60", desc: "Famed for ice creams & desserts." },
+          { name: "The Fatty Bao", rating: "4.2", img: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=60", desc: "Asian-inspired small plates." }
+        ]
+      }
+    };
+
+    // UTIL: normalise city keys
+    function normalizeCity(c){
+      if(!c) return '';
+      c = c.trim().toLowerCase();
+      if(c === 'bangalore') c = 'bengaluru';
+      if(c === 'bangaluru') c = 'bengaluru';
+      return c;
+    }
+
+    // search from hero
+    function onSearchHero(){
+      const v = document.getElementById('cityInputHero').value;
+      handleSearch(v);
+    }
+
+    function onSearch(){
+      const v = document.getElementById('cityInput').value;
+      handleSearch(v);
+    }
+
+    function quick(city){
+      handleSearch(city);
+    }
+
+    function handleSearch(raw){
+      const cityKey = normalizeCity(raw);
+      if(!cityKey){
+        alert('Please enter a city name.');
+        return;
+      }
+      if(!allowedCities.includes(cityKey)){
+        alert('No city found.');
+        return;
+      }
+      currentCity = cityKey;
+      currentCategory = null;
+      document.getElementById('citySection').classList.remove('hidden');
+      const pretty = cityKey.charAt(0).toUpperCase() + cityKey.slice(1);
+      document.getElementById('cityTitle').innerText = `Explore ${pretty}`;
+      document.getElementById('citySubtitle').innerText = `What would you like to discover in ${pretty}?`;
+      document.getElementById('resultsArea').innerHTML = `<div class="muted">Select a category to load results.</div>`;
+      document.getElementById('citySection').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    function selectCategory(cat){
+      if(!currentCity){
+        alert('Please search a city first.');
+        return;
+      }
+      currentCategory = cat;
+      const items = (dataStore[currentCity] && dataStore[currentCity][cat]) || [];
+      renderResults(items, cat);
+    }
+
+    function renderResults(items, cat){
+      if(!items || items.length === 0){
+        document.getElementById('resultsArea').innerHTML = `<div class="text-gray-400">No results found.</div>`;
+        return;
+      }
+      let html = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
+      items.forEach((it, idx) => {
+        // unique id per item: use cat + idx
+        html += `
+          <div class="card-dark p-4 rounded-lg hover-lift cursor-pointer flex gap-4" onclick="openModal(${idx})" data-index="${idx}">
+            <div class="w-36 h-24 flex-shrink-0 overflow-hidden rounded-md">
+              <img src="${it.img}" alt="${it.name}" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-1">
+              <div class="flex items-start justify-between">
+                <h4 class="text-lg font-semibold text-white">${it.name}</h4>
+                <div class="text-sm font-medium text-white">${it.rating}</div>
+              </div>
+              <p class="muted text-sm mt-1">${it.desc || ''}</p>
+              <div class="mt-3 text-sm">
+                <button class="px-3 py-1 rounded-full text-sm font-semibold" style="background:var(--primary);color:#fff" onclick="openModal(${idx}); event.stopPropagation();">View</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+      document.getElementById('resultsArea').innerHTML = html;
+      document.getElementById('resultsArea').dataset.cat = cat;
+    }
+
+    // open modal for clicked item (uses currentCity & currentCategory)
+    function openModal(index){
+      const cat = document.getElementById('resultsArea').dataset.cat;
+      if(!currentCity || !cat) return;
+      const items = dataStore[currentCity][cat] || [];
+      const item = items[index];
+      if(!item) return;
+      document.getElementById('modalImg').src = item.img;
+      document.getElementById('modalTitle').innerText = item.name;
+      document.getElementById('modalDesc').innerText = item.desc || '';
+      document.getElementById('modalExtra').innerText = `Category: ${cat.charAt(0).toUpperCase()+cat.slice(1)} • City: ${currentCity.charAt(0).toUpperCase()+currentCity.slice(1)}`;
+      document.getElementById('infoModal').classList.remove('hidden');
+    }
+
+    document.getElementById('closeModal').addEventListener('click', () => {
+      document.getElementById('infoModal').classList.add('hidden');
+    });
+    // close by clicking backdrop
+    document.getElementById('infoModal').addEventListener('click', (e) => {
+      if(e.target === document.getElementById('infoModal')) document.getElementById('infoModal').classList.add('hidden');
+    });
+
+    // small mobile toggle for header (keeps nav minimal)
+    document.getElementById('mobileToggle').addEventListener('click', () => {
+      alert('Mobile menu: use the quick buttons in the hero or search bar to navigate. (Mobile menu placeholder)');
+    });
+
+    // press Enter to search from hero input
+    document.getElementById('cityInputHero').addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') onSearchHero();
+    });
+
+    // expose functions globally for onclick attributes
+    window.openModal = openModal;
+    window.selectCategory = selectCategory;
+    window.quick = quick;
+    window.onSearch = onSearch;
+    window.onSearchHero = onSearchHero;
+  </script>
+</body>
+</html>

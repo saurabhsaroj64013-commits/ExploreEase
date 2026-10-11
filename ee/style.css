@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+:root{
+  --primary:#7c3aed;   /* purple-600 */
+  --primary-dark:#6d28d9; /* purple-700 */
+  --bg-dark:#0d0f17;
+  --card:#1a1c24;
+  --muted:#9ca3af;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg-dark);
+  color: #e6edf3;
+}
+
+/* Components */
+.card-dark { background: var(--card); }
+.hover-lift { transition: .25s; }
+.hover-lift:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,0.6); }
+header { background: #0b0c10; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.pill { background: #0b0c10; border: 1px solid rgba(255,255,255,0.04); }
+.btn-main { background: var(--primary); }
+.btn-main:hover { background: var(--primary-dark); }
+.muted { color: var(--muted); }
+.avatar-grad { background: linear-gradient(135deg,#7c3aed,#6d28d9); color: white; }
+.modal-backdrop{ background: rgba(2,6,23,0.6); }
+
+/* hero */
+.hero-bg {
+  background-image: linear-gradient(180deg, rgba(12,10,20,0.55), rgba(12,10,20,0.65)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+}
+
+/* brand pill */
+.brand-pill { background: var(--primary); }
+
+/* quick buttons */
+.quick-btn {
+  padding: .35rem .75rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: transparent;
+  color: #eae8ff;
+  cursor: pointer;
+}
+.quick-btn:hover { background: rgba(255,255,255,0.03); }
+
+/* modal animations */
+.modal-card { transform: translateY(12px); opacity: 0; transition: transform .22s ease, opacity .22s ease; }
+.modal-card.show { transform: translateY(0); opacity: 1; }
+
+/* navigate button style */
+.nav-btn {
+  background: var(--primary);
+  color: white;
+}
+.nav-btn:hover { background: var(--primary-dark); }
+
+/* small responsive tweaks */
+@media (max-width: 768px){
+  aside.sticky { position: static; top:auto; }
+  .hero-bg { height: 52vh; }
+}

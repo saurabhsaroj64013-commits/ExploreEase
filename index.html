@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="manifest.json" />
+  <title>ExploreEase - India Travel Planner</title>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <!-- Leaflet Map CSS & JS for Real Route Planning -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo-container" onclick="location.reload()" style="cursor:pointer;">
+      <div class="logo-icon"><i data-feather="compass"></i></div>
+      <h1 class="logo-text">ExploreEase</h1>
+    </div>
+    
+    <div class="header-actions" id="headerActions">
+      <!-- Guest State (Not Logged In) -->
+      <div id="authGuestNav" class="auth-nav-group">
+        <button onclick="openAuthModal('signin')" class="btn-secondary">Sign In</button>
+        <button onclick="openAuthModal('signup')" class="btn-main">Sign Up</button>
+      </div>
+
+      <!-- User Logged In State -->
+      <div id="authUserNav" class="auth-nav-group hidden">
+        <button onclick="openBookingsModal()" class="btn-secondary nav-booking-btn" title="View Booking History">
+          <i data-feather="bookmark"></i>
+          <span>My Bookings (<span id="bookingCountBadge">0</span>)</span>
+        </button>
+
+        <div class="user-profile-menu">
+          <button onclick="openProfileModal()" class="profile-avatar-btn" id="profileAvatarBtn" title="My Profile">
+            <span class="user-avatar" id="navUserInitial">U</span>
+            <span class="user-nav-name" id="navUserName">User</span>
+            <i data-feather="chevron-down" class="nav-chevron"></i>
+          </button>
+        </div>
+
+        <button onclick="handleLogout()" class="btn-logout" title="Sign Out">
+          <i data-feather="log-out"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="heroSection">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h2 class="hero-title">Where do you want to go?</h2>
+        <p class="hero-subtitle">Search any city in India to find the best hotels, places, and food.</p>
+
+        <div class="search-bar">
+          <i data-feather="search" class="search-icon"></i>
+          <input id="cityInputHero" class="search-input" placeholder="e.g., Delhi, Mumbai, Goa" />
+          <button onclick="onSearchHero()" class="search-btn">Explore</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEARCH RESULTS SECTION -->
+    <section id="resultsSection" class="results-section hidden">
+      <div class="results-header-box">
+        <h2 id="cityTitle" class="city-title"></h2>
+        <p class="city-subtitle">Select what you are looking for:</p>
+
+        <!-- LIVE WEATHER & BEST SEASON WIDGET -->
+        <div id="cityWeatherWidget" class="city-weather-widget hidden">
+          <div class="weather-col main-weather">
+            <span class="weather-temp" id="weatherTemp">28°C</span>
+            <div class="weather-details">
+              <span class="weather-condition" id="weatherDesc">Partly Cloudy</span>
+              <span class="weather-sub" id="weatherHumidity">💧 55% Humidity</span>
+            </div>
+          </div>
+          <div class="weather-col best-season">
+            <span class="season-badge"><i data-feather="calendar"></i> Best Season</span>
+            <span class="season-text" id="weatherBestSeason">Oct to Mar (Pleasant & Cool)</span>
+          </div>
+        </div>
+        
+        <!-- Category Toggles (Simple) -->
+        <div class="category-tabs">
+          <button class="tab-btn" onclick="selectCategory('places')" id="tab-places"><i data-feather="map-pin"></i> Tourist Places</button>
+          <button class="tab-btn" onclick="selectCategory('hotels')" id="tab-hotels"><i data-feather="home"></i> Hotels & Stays</button>
+          <button class="tab-btn" onclick="selectCategory('restaurants')" id="tab-restaurants"><i data-feather="coffee"></i> Restaurants</button>
+          <button class="tab-btn" onclick="selectCategory('routes')" id="tab-routes"><i data-feather="navigation"></i> Real Route Planner</button>
+          <button class="tab-btn" onclick="selectCategory('budget')" id="tab-budget"><i data-feather="pie-chart"></i> Trip Budget</button>
+        </div>
+      </div>
+
+      <div id="resultsArea" class="results-grid">
+        <!-- Results inject here -->
+      </div>
+
+      <!-- REAL ROUTE PLANNER SECTION -->
+      <div id="routePlannerSection" class="route-planner-section hidden">
+        <div class="route-planner-header">
+          <div class="route-header-title">
+            <div class="route-icon-badge"><i data-feather="navigation"></i></div>
+            <div>
+              <h3>Real-Time Route Planner & Live Navigation</h3>
+              <p>Calculate authentic driving, riding & walking routes between any two points with live turn-by-turn directions.</p>
+            </div>
+          </div>
+          
+          <div class="route-travel-modes" id="travelModeSelector">
+            <button type="button" class="mode-pill active" data-mode="driving" onclick="setTravelMode('driving')">
+              <i data-feather="truck"></i> Driving
+            </button>
+            <button type="button" class="mode-pill" data-mode="bike" onclick="setTravelMode('bike')">
+              <i data-feather="zap"></i> Two-Wheeler
+            </button>
+            <button type="button" class="mode-pill" data-mode="walking" onclick="setTravelMode('walking')">
+              <i data-feather="user"></i> Walking
+            </button>
+          </div>
+        </div>
+
+        <div class="route-planner-grid">
+          <!-- Route Control Panel -->
+          <div class="route-controls-card">
+            <form id="routeForm" onsubmit="calculateRealRoute(event)" class="route-form">
+              <!-- Start Location Input -->
+              <div class="form-group">
+                <label for="routeOriginInput"><span class="point-badge origin-dot"></span> Starting Point / Origin</label>
+                <div class="input-action-wrapper">
+                  <input type="text" id="routeOriginInput" class="form-input" placeholder="e.g., Delhi Airport, Connaught Place, Current Location" required />
+                  <button type="button" onclick="useCurrentLocation()" class="btn-location-geo" title="Use My Current GPS Location">
+                    <i data-feather="crosshair"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Swap Button -->
+              <div class="swap-locations-wrapper">
+                <button type="button" onclick="swapRouteEndpoints()" class="btn-swap-route" title="Swap Starting Point & Destination">
+                  <i data-feather="refresh-cw"></i>
+                </button>
+              </div>
+
+              <!-- Destination Input -->
+              <div class="form-group">
+                <label for="routeDestInput"><span class="point-badge dest-dot"></span> Destination / Landmark</label>
+                <input type="text" id="routeDestInput" class="form-input" placeholder="e.g., India Gate, Taj Mahal, Gateway of India" required />
+              </div>
+
+              <!-- Quick Place Suggestions in current city -->
+              <div class="quick-landmarks-box" id="quickLandmarksBox">
+                <span class="quick-landmarks-label">Quick select in <span id="quickCityName">City</span>:</span>
+                <div class="quick-landmarks-tags" id="quickLandmarksTags">
+                  <!-- Injected dynamically -->
+                </div>
+              </div>
+
+              <button type="submit" id="calculateRouteBtn" class="btn-main w-full">
+                <i data-feather="map"></i> Calculate Real Route
+              </button>
+            </form>
+
+            <!-- Route Metrics Summary -->
+            <div id="routeMetricsBox" class="route-metrics-card hidden">
+              <div class="metrics-grid">
+                <div class="metric-item">
+                  <span class="metric-label">Distance</span>
+                  <span class="metric-val" id="metricDistance">-- km</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Est. Time</span>
+                  <span class="metric-val text-primary" id="metricDuration">-- mins</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Live Traffic</span>
+                  <span class="metric-val text-green" id="metricTraffic">Normal Flow</span>
+                </div>
+              </div>
+
+              <!-- Live Turn by Turn Steps Toggle -->
+              <div class="directions-accordion">
+                <button type="button" onclick="toggleDirectionsList()" class="directions-toggle-btn">
+                  <span><i data-feather="list"></i> Step-by-Step Navigation (<span id="stepsCount">0</span> steps)</span>
+                  <i data-feather="chevron-down" id="directionsChevron"></i>
+                </button>
+                <div id="turnByTurnSteps" class="turn-steps-list hidden">
+                  <!-- Steps injected dynamically -->
+                </div>
+              </div>
+
+              <!-- Google Maps Live Navigation External Launcher -->
+              <div class="route-actions-foot">
+                <a id="openGoogleNavBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn-secondary w-full">
+                  <i data-feather="external-link"></i> Open Live GPS Navigation
+                </a>
+              </div>
+            </div>
+
+            <!-- Route Loading or Error Box -->
+            <div id="routeStatusMsg" class="route-status-msg hidden"></div>
+          </div>
+
+          <!-- Interactive Leaflet Map Canvas -->
+          <div class="route-map-wrapper">
+            <div id="leafletRouteMap" class="leaflet-map-canvas"></div>
+            <div class="map-overlay-legend">
+              <span class="legend-chip"><span class="chip-color origin-bg"></span> Start</span>
+              <span class="legend-chip"><span class="chip-color dest-bg"></span> Destination</span>
+              <span class="legend-chip"><span class="chip-color route-bg"></span> Real Route (OSRM)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SMART TRIP BUDGET & COST CALCULATOR SECTION -->
+      <div id="budgetCalculatorSection" class="budget-section hidden">
+        <div class="budget-card">
+          <div class="budget-header">
+            <div class="budget-icon-badge"><i data-feather="dollar-sign"></i></div>
+            <div>
+              <h3>Trip Budget & Cost Calculator for <span id="budgetCityName">City</span></h3>
+              <p>Plan your travel expenses accurately. Estimate stay, dining, sightseeing, and local transport costs.</p>
+            </div>
+          </div>
+
+          <div class="budget-grid">
+            <div class="budget-inputs-col">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="budgetDays"><i data-feather="clock"></i> Duration (Days)</label>
+                  <select id="budgetDays" class="form-input" onchange="calculateTripBudget()">
+                    <option value="1">1 Day</option>
+                    <option value="2">2 Days (Weekend Trip)</option>
+                    <option value="3" selected>3 Days (Popular)</option>
+                    <option value="5">5 Days (Complete Tour)</option>
+                    <option value="7">7 Days (Week Getaway)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="budgetPeople"><i data-feather="users"></i> Travelers</label>
+                  <select id="budgetPeople" class="form-input" onchange="calculateTripBudget()">
+                    <option value="1">Solo Traveler (1 Person)</option>
+                    <option value="2" selected>Couple (2 Persons)</option>
+                    <option value="4">Family / Group (4 Persons)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="budgetTier"><i data-feather="shield"></i> Travel Style</label>
+                <select id="budgetTier" class="form-input" onchange="calculateTripBudget()">
+                  <option value="budget">Backpacker / Budget (Hostels & Street Food)</option>
+                  <option value="mid" selected>Comfort / Mid-Range (3-4 Star Hotels & Cafes)</option>
+                  <option value="luxury">Luxury / Premium (5 Star Resorts & Fine Dining)</option>
+                </select>
+              </div>
+
+              <div class="budget-breakdown-list">
+                <div class="breakdown-item">
+                  <span>🏨 Hotel & Accommodation:</span>
+                  <strong id="costHotel">₹0</strong>
+                </div>
+                <div class="breakdown-item">
+                  <span>🍽️ Food & Dining:</span>
+                  <strong id="costFood">₹0</strong>
+                </div>
+                <div class="breakdown-item">
+                  <span>🏛️ Sightseeing & Entry Tickets:</span>
+                  <strong id="costActivities">₹0</strong>
+                </div>
+                <div class="breakdown-item">
+                  <span>🚕 Local Transport & Cabs:</span>
+                  <strong id="costTransport">₹0</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="budget-total-col">
+              <div class="total-budget-badge">
+                <span class="total-label">Estimated Total Trip Expense</span>
+                <span class="total-amount" id="totalBudgetAmount">₹14,500</span>
+                <span class="per-person-label" id="perPersonAmount">Approx ₹7,250 per person</span>
+              </div>
+              <p class="budget-note">💡 Includes average room tariff, 3 meals/day, landmark entry passes, and cab/metro fares.</p>
+              <button type="button" onclick="selectCategory('hotels')" class="btn-main w-full" style="margin-top:14px;">
+                <i data-feather="home"></i> View Hotels in this Budget
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEEDBACK CALLOUT (Appears after user explores) -->
+      <div id="exploreFeedbackBanner" class="feedback-banner">
+        <div class="feedback-banner-content">
+          <div class="feedback-banner-icon">
+            <i data-feather="smile"></i>
+          </div>
+          <div>
+            <h3>How was your exploration experience?</h3>
+            <p>Tell us what you liked or how we can make ExploreEase even better for your trips.</p>
+          </div>
+        </div>
+        <button onclick="openFeedbackModal()" class="btn-feedback-cta">
+          <i data-feather="star"></i> Give Feedback
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Details -->
+  <div id="infoModal" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <button id="closeModal" class="modal-close" aria-label="Close modal"><i data-feather="x"></i></button>
+      <img id="modalImg" src="" class="modal-img" alt="Place image" />
+      <div id="modalMeta" class="modal-meta"></div>
+      <h3 id="modalTitle" class="modal-title"></h3>
+      <p id="modalDesc" class="modal-desc"></p>
+      <div id="modalActions" class="modal-actions"></div>
+    </div>
+  </div>
+
+  <!-- FEEDBACK MODAL -->
+  <div id="feedbackModal" class="modal-backdrop hidden">
+    <div class="modal-content feedback-modal-content">
+      <button id="closeFeedbackModal" class="modal-close" aria-label="Close feedback modal"><i data-feather="x"></i></button>
+      
+      <div class="feedback-modal-header">
+        <div class="feedback-header-icon"><i data-feather="award"></i></div>
+        <h3>Share Your Feedback</h3>
+        <p>Your suggestions help us improve ExploreEase for travelers worldwide!</p>
+      </div>
+
+      <form id="feedbackForm" onsubmit="submitFeedback(event)" class="feedback-form">
+        <!-- Star Rating -->
+        <div class="form-group">
+          <label>How would you rate your experience?</label>
+          <div class="star-rating" id="starRating">
+            <span class="star" data-rating="1">★</span>
+            <span class="star" data-rating="2">★</span>
+            <span class="star" data-rating="3">★</span>
+            <span class="star" data-rating="4">★</span>
+            <span class="star active" data-rating="5">★</span>
+          </div>
+          <input type="hidden" id="feedbackRating" value="5" />
+        </div>
+
+        <!-- Name -->
+        <div class="form-group">
+          <label for="feedbackName">Your Name</label>
+          <input type="text" id="feedbackName" class="form-input" placeholder="e.g., Rahul Sharma" required />
+        </div>
+
+        <!-- Visited / Searched City -->
+        <div class="form-group">
+          <label for="feedbackCity">City You Explored</label>
+          <input type="text" id="feedbackCity" class="form-input" placeholder="e.g., Delhi, Mumbai, Goa" />
+        </div>
+
+        <!-- Comments -->
+        <div class="form-group">
+          <label for="feedbackMessage">Your Feedback / Suggestions</label>
+          <textarea id="feedbackMessage" class="form-textarea" rows="3" placeholder="What did you love? Any places we should add or clarify?" required></textarea>
+        </div>
+
+        <button type="submit" id="feedbackSubmitBtn" class="btn-main w-full">
+          Submit Feedback
+        </button>
+      </form>
+
+      <!-- Feedback Success Message -->
+      <div id="feedbackSuccess" class="feedback-success-box hidden">
+        <div class="feedback-success-icon"><i data-feather="check-circle"></i></div>
+        <h4>Thank you for your feedback!</h4>
+        <p>Your thoughts and suggestions have been recorded to make ExploreEase better.</p>
+        <button onclick="closeFeedbackModal()" class="btn-main mt-4">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Feedback Trigger Button -->
+  <button id="floatingFeedbackBtn" class="floating-feedback-btn" onclick="openFeedbackModal()" title="Give Feedback">
+    <i data-feather="message-square"></i>
+    <span>Feedback</span>
+  </button>
+
+  <!-- ================= AUTHENTICATION MODAL (SIGN IN / SIGN UP) ================= -->
+  <div id="authModal" class="modal-backdrop hidden">
+    <div class="modal-content auth-modal-content">
+      <button id="closeAuthModal" onclick="closeAuthModal()" class="modal-close" aria-label="Close auth modal"><i data-feather="x"></i></button>
+
+      <!-- Auth Tabs -->
+      <div class="auth-tabs">
+        <button id="tabSignIn" class="auth-tab active" onclick="switchAuthTab('signin')">Sign In</button>
+        <button id="tabSignUp" class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="signInForm" onsubmit="handleSignIn(event)" class="auth-form">
+        <div class="auth-form-header">
+          <h3>Welcome Back!</h3>
+          <p>Sign in to access your saved profile and previous bookings.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="signInEmail">Email Address</label>
+          <div class="input-icon-wrapper">
+            <i data-feather="mail" class="input-icon"></i>
+            <input type="email" id="signInEmail" class="form-input with-icon" placeholder="name@example.com" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="signInPassword">Password</label>
+          <div class="input-icon-wrapper">
+            <i data-feather="lock" class="input-icon"></i>
+            <input type="password" id="signInPassword" class="form-input with-icon" placeholder="Enter your password" required />
+          </div>
+        </div>
+
+        <div id="signInError" class="auth-error-msg hidden"></div>
+
+        <button type="submit" id="signInSubmitBtn" class="btn-main w-full">Sign In</button>
+
+        <p class="auth-switch-text">
+          Don't have an account? <a href="javascript:void(0)" onclick="switchAuthTab('signup')">Sign up now</a>
+        </p>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="signUpForm" onsubmit="handleSignUp(event)" class="auth-form hidden">
+        <div class="auth-form-header">
+          <h3>Create Your Account</h3>
+          <p>Join ExploreEase to book stays, tours, and manage your travel history.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="signUpName">Full Name</label>
+          <div class="input-icon-wrapper">
+            <i data-feather="user" class="input-icon"></i>
+            <input type="text" id="signUpName" class="form-input with-icon" placeholder="e.g., Saurabh Kumar" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="signUpEmail">Email Address</label>
+          <div class="input-icon-wrapper">
+            <i data-feather="mail" class="input-icon"></i>
+            <input type="email" id="signUpEmail" class="form-input with-icon" placeholder="name@example.com" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="signUpPhone">Phone Number</label>
+          <div class="input-icon-wrapper">
+            <i data-feather="phone" class="input-icon"></i>
+            <input type="tel" id="signUpPhone" class="form-input with-icon" placeholder="e.g., +91 9876543210" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="signUpPassword">Password</label>
+          <div class="input-icon-wrapper">
+            <i data-feather="lock" class="input-icon"></i>
+            <input type="password" id="signUpPassword" class="form-input with-icon" placeholder="Create a password (min 6 chars)" minlength="6" required />
+          </div>
+        </div>
+
+        <div id="signUpError" class="auth-error-msg hidden"></div>
+
+        <button type="submit" id="signUpSubmitBtn" class="btn-main w-full">Create Account</button>
+
+        <p class="auth-switch-text">
+          Already have an account? <a href="javascript:void(0)" onclick="switchAuthTab('signin')">Sign in here</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= USER PROFILE EDIT & SAVE MODAL ================= -->
+  <div id="profileModal" class="modal-backdrop hidden">
+    <div class="modal-content profile-modal-content">
+      <button onclick="closeProfileModal()" class="modal-close" aria-label="Close profile modal"><i data-feather="x"></i></button>
+
+      <div class="profile-header">
+        <div class="profile-large-avatar" id="profileLargeAvatar">S</div>
+        <div class="profile-header-text">
+          <h3 id="profileDisplayName">User Profile</h3>
+          <p id="profileDisplayEmail" class="muted">user@example.com</p>
+        </div>
+      </div>
+
+      <form id="profileForm" onsubmit="handleSaveProfile(event)" class="profile-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="profileNameInput">Full Name</label>
+            <input type="text" id="profileNameInput" class="form-input" required />
+          </div>
+          <div class="form-group">
+            <label for="profilePhoneInput">Phone Number</label>
+            <input type="tel" id="profilePhoneInput" class="form-input" placeholder="+91 ..." />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="profileCityInput">Home City / Location</label>
+          <input type="text" id="profileCityInput" class="form-input" placeholder="e.g., New Delhi, India" />
+        </div>
+
+        <div class="form-group">
+          <label for="profileBioInput">Travel Bio / Preferences</label>
+          <textarea id="profileBioInput" class="form-textarea" rows="2" placeholder="e.g., Adventure seeker, food lover, budget traveler"></textarea>
+        </div>
+
+        <div id="profileSavedAlert" class="profile-success-alert hidden">
+          <i data-feather="check"></i> Profile details updated and saved successfully!
+        </div>
+
+        <div class="modal-actions-row">
+          <button type="button" onclick="closeProfileModal()" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-main"><i data-feather="save"></i> Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= PREVIOUS BOOKINGS HISTORY MODAL ================= -->
+  <div id="bookingsModal" class="modal-backdrop hidden">
+    <div class="modal-content bookings-modal-content">
+      <button onclick="closeBookingsModal()" class="modal-close" aria-label="Close bookings modal"><i data-feather="x"></i></button>
+
+      <div class="bookings-modal-header">
+        <div class="bookings-header-icon"><i data-feather="calendar"></i></div>
+        <div style="flex:1;">
+          <h3>My Previous Bookings</h3>
+          <p class="muted">Review all your past reservations, hotel stays, and place bookings.</p>
+        </div>
+        <button type="button" onclick="printTripItinerary()" class="btn-secondary" style="font-size:0.85rem; padding:6px 14px;" title="Print or Save as PDF">
+          <i data-feather="printer"></i> Print / PDF Itinerary
+        </button>
+      </div>
+
+      <!-- Bookings List Container -->
+      <div id="bookingsList" class="bookings-list">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= BOOKING CONFORMATION / ACTION MODAL ================= -->
+  <div id="bookItemModal" class="modal-backdrop hidden">
+    <div class="modal-content booking-action-modal">
+      <button onclick="closeBookItemModal()" class="modal-close" aria-label="Close booking modal"><i data-feather="x"></i></button>
+
+      <div class="booking-item-preview">
+        <img id="bookItemImg" src="" alt="Booking Preview" class="booking-preview-img" />
+        <div class="booking-item-details">
+          <span class="badge safe" id="bookItemCategoryBadge">Hotels & Stays</span>
+          <h3 id="bookItemTitle">Grand Hotel</h3>
+          <p id="bookItemCity" class="muted">Delhi</p>
+        </div>
+      </div>
+
+      <form id="bookItemForm" onsubmit="confirmBooking(event)" class="booking-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bookDate">Date</label>
+            <input type="date" id="bookDate" class="form-input" required />
+          </div>
+          <div class="form-group">
+            <label for="bookGuests">Guests</label>
+            <select id="bookGuests" class="form-input">
+              <option value="1 Guest">1 Guest</option>
+              <option value="2 Guests" selected>2 Guests</option>
+              <option value="3 Guests">3 Guests</option>
+              <option value="4+ Guests">4+ Guests / Family</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bookSpecialRequests">Special Requests / Notes</label>
+          <input type="text" id="bookSpecialRequests" class="form-input" placeholder="e.g., King bed, early check-in, window view" />
+        </div>
+
+        <div class="modal-actions-row">
+          <button type="button" onclick="closeBookItemModal()" class="btn-secondary">Cancel</button>
+          <button type="submit" id="confirmBookBtn" class="btn-main"><i data-feather="check-circle"></i> Confirm Booking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    &copy; <span id="year"></span> ExploreEase
+  </footer>
+
+  <!-- Chatbot -->
+  <div id="chatbot-container" class="chatbot-container">
+    <button id="chatbot-toggle" class="chatbot-toggle">
+      <i data-feather="message-circle"></i>
+    </button>
+    <div id="chatbot-window" class="chatbot-window hidden">
+      <div class="chatbot-header">
+        <h4>ExploreEase Assistant</h4>
+        <button id="chatbot-close"><i data-feather="x"></i></button>
+      </div>
+      <div id="chatbot-messages" class="chatbot-messages">
+        <div class="message bot">Hi there! I'm your ExploreEase travel assistant. How can I help you plan your trip in India today?</div>
+      </div>
+      <div class="chatbot-input">
+        <input type="text" id="chatbot-input-field" placeholder="Ask me something..." />
+        <button id="chatbot-send"><i data-feather="send"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

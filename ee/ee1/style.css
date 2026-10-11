@@ -1,0 +1,154 @@
+/* ------------------------------ */
+/*        GLOBAL STYLES           */
+/* ------------------------------ */
+
+body {
+  background: #0d0f17;
+  color: #e4e4e7;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #1f2330;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #0d0f17;
+}
+
+/* ------------------------------ */
+/*       BRAND ELEMENTS           */
+/* ------------------------------ */
+
+.brand-pill {
+  background: linear-gradient(135deg, #ff0844, #ffb199);
+}
+
+.btn-main {
+  background: linear-gradient(135deg, #ff0844, #ffb199);
+  transition: 0.25s;
+}
+.btn-main:hover {
+  opacity: 0.85;
+}
+
+/* ------------------------------ */
+/*        CARDS & ELEMENTS        */
+/* ------------------------------ */
+
+.card-dark {
+  background: #171922;
+  border: 1px solid #1f2028;
+}
+
+.pill {
+  background: #11131b;
+  border: 1px solid #2a2c36;
+}
+
+.hover-lift {
+  transition: 0.25s;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0px 8px 20px rgba(0,0,0,0.4);
+}
+
+/* ------------------------------ */
+/*         HERO BACKGROUND        */
+/* ------------------------------ */
+
+.hero-bg {
+  background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1500&q=80");
+  background-size: cover;
+  background-position: center;
+}
+
+.modal-backdrop {
+  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.55);
+}
+
+/* ------------------------------ */
+/*         TEXT UTILITIES         */
+/* ------------------------------ */
+
+.muted {
+  color: #9ca3af;
+}
+
+/* ------------------------------ */
+/*        QUICK SELECT BUTTON     */
+/* ------------------------------ */
+
+.quick-btn {
+  padding: 6px 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.07);
+  transition: 0.25s;
+}
+.quick-btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+/* ------------------------------ */
+/*            AVATARS             */
+/* ------------------------------ */
+
+.avatar-grad {
+  background: linear-gradient(145deg, #e63946, #ff6f6f);
+  color: white;
+}
+
+/* ------------------------------ */
+/*             MODAL              */
+/* ------------------------------ */
+
+#infoModal {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.modal-card {
+  animation: popIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* NAVIGATE BUTTON */
+.nav-btn {
+  background: linear-gradient(135deg, #1e90ff, #00c6ff);
+  color: white;
+  font-weight: 600;
+  transition: 0.25s;
+}
+.nav-btn:hover {
+  opacity: 0.85;
+}
+
+/* Close Button Hover */
+#closeBtn:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+/* ------------------------------ */
+/*      RESPONSIVE TWEAKS        */
+/* ------------------------------ */
+
+@media (max-width: 768px) {
+  #infoCard {
+    padding: 20px;
+  }
+}
